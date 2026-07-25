@@ -1,42 +1,23 @@
 import time
-from pathlib import Path
-
-from pypdf import PdfReader
 
 from celery_app import celery
 
 
 @celery.task
-def long_task(pdf_path: str):
-    path = Path(pdf_path)
-    print(f"Extracting text from {path.name}")
+def long_task(task_id: int):
+    label = f"task-{task_id}"
 
-    reader = PdfReader(path)
-    pages_text = []
+    print(f"Extracting text from {label}")
+    time.sleep(0.15)
 
-    for i, page in enumerate(reader.pages, start=1):
-        print(f"Processing page {i}/{len(reader.pages)}")
-        pages_text.append(page.extract_text() or "")
+    print(f"Calling OpenAI API for {label}")
+    time.sleep(4.5)
+    summary = f"Summary of {label}"
 
-    text = "\n".join(pages_text)
-    print(f"Finished extracting {len(text)} characters from {path.name}")
-
-    return {
-        "filename": path.name,
-        "page_count": len(reader.pages),
-        "char_count": len(text),
-    }
-
-
-@celery.task
-def summarize_batch(results: list[dict], start_time: float):
-    total_time = time.perf_counter() - start_time
-    message = f"All {len(results)} tasks completed in {total_time:.2f} seconds"
-    print(message, flush=True)
+    print(f"Storing result for {label} in DB")
+    time.sleep(0.1)
 
     return {
-        "task_count": len(results),
-        "total_time_seconds": round(total_time, 2),
-        "message": message,
-        "results": results,
+        "task_id": task_id,
+        "summary": summary,
     }

@@ -1,12 +1,12 @@
-$body = @{ count = 50 } | ConvertTo-Json
+$body = @{ count = 30 } | ConvertTo-Json
 
 $result = Invoke-RestMethod -Method POST `
-  -Uri "http://localhost:8000/start-process" `
+  -Uri "http://localhost:8000/start-notify" `
   -ContentType "application/json" `
   -Body $body
 
 Write-Host ""
-Write-Host "=== Process Batch Complete ===" -ForegroundColor Green
+Write-Host "=== Notify Batch Complete ===" -ForegroundColor Green
 Write-Host ("Task type:  {0}" -f $result.task_type)
 Write-Host ("Tasks:      {0}" -f $result.task_count)
 Write-Host ("Total time: {0} s" -f $result.total_time_seconds)
